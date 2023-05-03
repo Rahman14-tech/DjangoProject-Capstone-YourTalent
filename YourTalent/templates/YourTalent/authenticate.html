@@ -1,0 +1,38 @@
+{% extends 'YourTalent/layout.html' %}
+{% load static %}
+{% block javascript %}
+<script src="{% static 'YourTalent/authenticate.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container"id="register_contain">
+        <div class="card-body">
+            <div class="row">
+                <div class="col"id="the_image_part_auth">
+                  <img src="{% static 'YourTalent/authenticate.svg' %}"id="authenticate_image">
+                </div>
+                <div class="col"id="the_form_part_auth">
+                  <h2>Authenticate</h2><br>
+                  <form method="post"action="{% url 'authenticate' username %}">
+                    {% csrf_token %}
+                    <h4>Authentication Code</h4>
+                    <input type="number"class="form-control"id="code_form_auth"name="authenticationcode" placeholder="Code must be in 6 digits number." min="100000"max="999999"><br>
+                      {% if error %}
+                      <div class="alert alert-danger" role="alert">
+                        {{error}}
+                      </div>
+                      {% endif %}
+                    <br><br>
+                    <button type="submit"id="authenticate_button"value="{{username}}">Authenticate</button>
+                  </form>
+                  <br>
+                  <div class="alert alert-warning"id="warning_resend" role="alert"style="display:none;">
+                    YourTalent have send the email check it and submit the code again.
+                  </div>
+                  <span id="register_here">Still hasn't receive the code yet?<span id="countdown_auth">30</span></span>
+                  
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock %}

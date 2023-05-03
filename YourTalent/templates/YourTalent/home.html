@@ -1,0 +1,147 @@
+{% extends "YourTalent/layout.html" %}
+{% load static %}
+{% block javascript %}
+<script src="{% static 'YourTalent/home.js' %}"></script>
+{% endblock %}
+{% block body %}
+{% if user.is_authenticated %}
+    {% if role == "recruiter" %}
+    {% if Contents_cat %}
+    <h2 class="mid_text"id="choose_category_header">{{Contents_cat}}</h2>
+    {% else %}
+    <h2 class="mid_text"id="choose_category_header">Choose category of content</h2>
+    {% endif %}
+    <br>
+    <div class="mid_text"id="category_genre">
+        <select name="optionsee" id="option">
+            <option value="tosee"  selected>Select category to see.</option>
+            {% for genre in genres%}
+            <option value="/{{username}}?category={{genre}}" class="dropdown-item">{{genre}}</option>
+            {% endfor %}
+        </select>
+    </div><br>
+    {% if no_content %}
+    <br>
+    <h2>{{no_content}}</h2>
+    {% endif %}
+        {% if Contents %}
+        <div class="container">
+          <div class="row">
+            {% if Contents_cat == 'Illustration' %}
+                {% for content in Contents %}
+                <div class="col">
+                  <a href="{% url 'viewcontent' category=Contents_cat id=content.id %}"  id="title_redirect">
+                  <div class="card" style="width: 18rem;">
+                    <img src="/media/{{content.file}}" class="card-img-top" alt="Content Image">
+                    <div class="card-body">
+                      <h5 class="card-title">{{content.title}}</h5>
+                      <h6>Creator: {{content.creator}}</h6>
+                      <p class="card-text text-truncate">{{content.description}}</p>
+                    </div>
+                  </div>
+                  </a>
+                </div>
+                {% endfor %}
+                  {% elif Contents_cat == 'Music' %}
+                    {% for content in Contents %}
+                      <div class="col">
+                        <div class="card" style="width: 18rem;">
+                          <audio controls id="audio_play">
+                            <source src="/media/{{content.file}}" type="audio/mpeg">
+                            Your browser does not support the audio tag.
+                          </audio>
+                          <div class="card-body">
+                            <h5 class="card-title">{{content.title}}</h5>
+                            <h6>Creator: {{content.creator}}</h6>
+                            <p class="card-text">{{content.description}}</p>
+                            {% if role == 'recruiter' %}
+                            <div class="alert alert-success success_view" role="alert" style="display:none;">
+                            </div>
+                            <div class="alert alert-danger failed_view" role="alert" style="display:none;">
+                            </div>
+                            <button type="button"class="inun_button"id="interest_button"value="{{content.id}}">Interest</button>
+                            <form id="form_recruit"method="post"action="{% url 'home' username %}">
+                              {% csrf_token %}
+                            <button type="button"id="recruit_button"data-bs-toggle="modal" data-bs-target="#exampleModal">Recruit</button>
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Recruit Content Creator</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        Are you sure to recruit "{{content.creator}}<input type="hidden" name="the_creator" value="{{content.creator}}"></input>" from the content "{{content.title}}<input type="hidden" name="the_content"value="{{content.title}}"></input><input type="hidden" name="the_category"value="{{content.category}}"></input>"?
+                                        The system will send gmail and notification to the content creator if you sure to recruit.
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary"name="recruit_now"id="recruit_now_id">Recruit!</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
+                            {% endif %}
+                          </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% elif Contents_cat == 'Dance' or Contents_cat == 'Programming' %}
+                      {% for content in Contents %}
+                          <div class="col">
+                            <a href="{% url 'viewcontent' category=Contents_cat id=content.id %}"  id="title_redirect">
+                            <div class="card" style="width: 18rem;">
+                              <img src="/media/{{content.thumbnail}}" class="card-img-top" alt="Thumbnail Image">
+                              <div class="card-body">
+                                <h5 class="card-title">{{content.title}}</h5>
+                                <h6>Creator: {{content.creator}}</h6>
+                                <p class="card-text text-truncate">{{content.description}}</p>
+                              </div>
+                            </div>
+                            </a>
+                          </div>
+                      {% endfor %}
+                  {% endif %}
+              </div>
+        </div>
+        {% endif %}
+    {% else %}
+    <h2 class="mid_text">Create Your Content Here!</h2>
+    <div class="container"id="home_creator">
+        <form method="post"action="{% url 'home' username %}"enctype="multipart/form-data">
+            {% csrf_token %}
+            <h4>Title</h4>
+            <input type="text"class="form-control"id="title_form_creation"name="title" placeholder="Title must have atleast 10 characters."><br>
+            <h4>Description</h4>
+            <input type="text"class="form-control"id="description_form_creation"name="description"placeholder="Description must have atleast 30 characters."><br>
+            <h4>Category</h4>
+            <div class="mid_text"id="category_genre">
+                <select name="optioncate" id="option">
+                    <option value="tosee" selected >Select category.</option>
+                    {% for genre in genres%}
+                    <option value="{{genre}}" class="dropdown-item thegenre">{{genre}}</option>
+                    {% endfor %}
+                </select>
+            </div><br>
+            <h4>Source</h4>
+            <div id="category_form_place">
+            </div>
+              {% if error %}
+              <div class="alert alert-danger" role="alert">
+                {{error}}
+              </div>
+              {% elif success %}
+              <div class="alert alert-success" role="alert">
+               {{success}}
+              </div>
+              {% endif %}
+            <br><br>
+            <button type="submit"id="register_button"name="content_creator_part">Submit</button>
+          </form>
+    </div>
+    {% endif %}
+{% endif %}
+<div id="loading_register_div">
+  <img src="{% static 'YourTalent/loading.svg' %}"id="loading_register">
+</div>
+{% endblock %}

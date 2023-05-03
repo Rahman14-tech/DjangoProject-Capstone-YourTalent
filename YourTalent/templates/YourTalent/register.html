@@ -1,0 +1,50 @@
+{% extends "YourTalent/layout.html" %}
+{% load static %}
+{% block javascript %}
+<script src="{% static 'YourTalent/register.js' %}"></script>
+{% endblock %}
+{% block body %}
+<div class="container"id="register_contain">
+        <div class="card-body">
+            <div class="row">
+                <div class="col"id="the_image_part_login">
+                  <img src="{% static 'YourTalent/welcome.svg' %}"id="register_image">
+                </div>
+                <div class="col"id="the_form_part_login">
+                  <h2>Register</h2><br>
+                  <form method="post"action="{% url 'register' %}">
+                    {% csrf_token %}
+                    <h4>Username</h4>
+                    <input type="text"class="form-control"id="username_form_register"name="username" placeholder="Username must have at least 5 characters"><br>
+                    <h4>Email</h4>
+                    <input type="text"class="form-control"id="email_form_register"name="email"placeholder="example@gmail.com"><br>
+                    <h4>Password</h4>
+                    <input type="password"class="form-control"id="password_form_register"name="password"placeholder="Required at least 8 character length of password"><br>
+                    <h4>Confirm Password</h4>
+                    <input type="password"class="form-control"id="confirm_form_register"name="confirmation"placeholder="Confirmation must same as password"><br>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="radio1" name="optradio" value="contentcreator" checked>
+                        <label class="form-check-label" for="radio1">Content Creator</label>
+                      </div>
+                      <div class="form-check">
+                        <input type="radio" class="form-check-input" id="radio2" name="optradio" value="recruiter">
+                        <label class="form-check-label" for="radio2">Recruiter</label>
+                      </div>
+                      {% if error %}
+                      <div class="alert alert-danger" role="alert">
+                        {{error}}
+                      </div>
+                      {% endif %}
+                    <br><br>
+                    <button type="submit"id="register_button">Register</button>
+                  </form>
+                  <br>
+                  <span id="register_here">Already have an account?<a href="{% url 'login'%}"> Login now.</a></span>
+                </div>
+            </div>
+        </div>
+</div>
+<div id="loading_register_div">
+    <img src="{% static 'YourTalent/loading.svg' %}"id="loading_register">
+</div>
+{% endblock %}

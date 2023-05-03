@@ -1,0 +1,85 @@
+{% extends 'YourTalent/layout.html' %}
+{% load static %}
+{% block javascript %}
+<script src="{% static 'YourTalent/view.js' %}"></script>
+{% endblock %}
+{% block body %}
+{% if user.is_authenticated %}
+<br>
+<div class="container">
+    <div class="row">
+      <div class="col">
+        {% if category == 'Dance' or category == 'Programming' %}
+        <iframe src="https://www.youtube.com/embed/{{Content.videoid}}"id="the_vid" style="border:0px #ffffff none;" name="myiFrame" scrolling="no" frameborder="1" marginheight="0px" marginwidth="0px" allowfullscreen ></iframe>
+        {% elif category == 'Illustration' %}
+        <img src="/media/{{Content.file}}"alt="Content Image" id="view_image">
+        {% endif %}
+      </div>
+      <div class="col"id="content_word">
+        <h2>{{Content.title}}</h2>
+        <h5>Creator:<span id="the_creatorname">{{Content.creator}}</span></h5>
+        <h5>Category:<span id="The_category">{{Content.category}}</span></h5>
+        <h5>Description:</h5>
+        <p id="content_desc">{{Content.description}}</p>
+        {% if role == 'recruiter' %}
+        <div class="alert alert-success" role="alert" id="success_view" style="display:none;">
+        </div>
+        <div class="alert alert-danger" role="alert" id="failed_view"style="display:none;">
+        </div>
+        <div>
+        </div>
+        <div id="interest_uninterest_button">
+          {% if interest == None %}
+        <button type="button"class="inun_button"id="interest_button"value="{{Content.id}}">Interest</button>
+          {% else %}
+        <button type="button"id="uninterest_button"class="inun_button"value="{{Content.id}}">Uninterest</button>
+          {% endif %}
+        </div>
+        <form id="form_recruit"method="post"action="{% url 'viewcontent' category=category id=Content.id %}">
+        {% csrf_token %}
+          <button type="button"id="recruit_button"data-bs-toggle="modal" data-bs-target="#exampleModal">Recruit</button>
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Recruit Content Creator</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Are you sure to recruit <input type="hidden" name="the_creator" value="{{Content.creator}}"></input>"{{Content.creator}}" from the content "{{Content.title}}"<input type="hidden" name="the_content"value="{{Content.title}}"></input><input type="hidden" name="the_category"value="{{Content.category}}"></input>?
+                  The system will send gmail and notification to the content creator if you sure to recruit.
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-primary"name="recruit_now"id="recruit_now_id">Recruit!</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        {% else %}
+        <button type="button" class="btn btn-outline-secondary"data-bs-toggle="modal" data-bs-target="#exampleModal">Delete</button>
+                                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                          <p>You sure you want to delete yourtalent? Because once you delete yourtalent you will lose the content of it and have to reupload it again.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-outline-danger delete_contentcreator_content"id="{{Content.id}}"value="{{Content.category}}">Sure</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+        {% endif %}
+      </div>
+    </div>
+</div>
+{% endif %}
+<div id="loading_register_div">
+  <img src="{% static 'YourTalent/loading.svg' %}"id="loading_register">
+</div>
+{% endblock %}

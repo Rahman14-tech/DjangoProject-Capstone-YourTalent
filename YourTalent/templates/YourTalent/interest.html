@@ -1,0 +1,108 @@
+{% extends "YourTalent/layout.html" %}
+{% load static %}
+{% block javascript %}
+<script src="{% static 'YourTalent/interest.js' %}"></script>
+{% endblock %}
+{% block body %}
+{% if user.is_authenticated %}
+    {% if role == "recruiter" %}
+    {% if Contents_cat %}
+    <h2 class="mid_text"id="choose_category_header">{{Contents_cat}}</h2>
+    {% else %}
+    <h2 class="mid_text"id="choose_category_header">Choose category of <span id="cur_user">{{username}}</span> interest</h2>
+    {% endif %}
+    <br>
+    <div class="mid_text"id="category_genre">
+        <select name="optionsee" id="option">
+            <option value="tosee" selected>Select category to see your interest.</option>
+            {% for genre in genres%}
+            <option value="/{{username}}?category={{genre}}" class="dropdown-item">{{genre}}</option>
+            {% endfor %}
+        </select>
+    </div><br>
+    {% if no_content %}
+    <br>
+    <h2>{{no_content}}</h2>
+    {% endif %}
+        {% if Contents %}
+        <div class="container">
+          <div class="row">
+            {% if Contents_cat == 'Illustration' %}
+                {% for content in Contents %}
+                <div class="col">
+                  <a href="{% url 'viewcontent' category=Contents_cat id=content.interest_file.id %}"  id="title_redirect">
+                  <div class="card" style="width: 18rem;">
+                    <img src="/media/{{content.interest_file.file}}" class="card-img-top" alt="Content Image">
+                    <div class="card-body">
+                      <h5 class="card-title">{{content.interest_file.title}}</h5>
+                      <h6>Creator: {{content.interest_file.creator}}</h6>
+                      <p class="card-text text-truncate">{{content.interest_file.description}}</p>
+                    </div>
+                  </div>
+                  </a>
+                </div>
+                {% endfor %}
+                  {% elif Contents_cat == 'Music' %}
+                    {% for content in Contents %}
+                      <div class="col">
+                        <div class="card"id="card{{content.interest_file.id}}" style="width: 18rem;">
+                          <audio controls id="audio_play">
+                            <source src="/media/{{content.interest_file.file}}" type="audio/mpeg">
+                            Your browser does not support the audio tag.
+                          </audio>
+                          <div class="card-body">
+                            <h5 class="card-title">{{content.interest_file.title}}</h5>
+                            <h6>Creator: {{content.interest_file.creator}}</h6>
+                            <p class="card-text">{{content.interest_file.description}}</p>
+                            <div class="alert alert-success" role="alert" id="success_view" style="display:none;">
+                            </div>
+                            <div class="alert alert-danger" role="alert" id="failed_view"style="display:none;">
+                            </div>
+                            <button type="button"id="uninterest_button"class="inun_button"value="{{content.interest_file.id}}">Uninterest</button>
+                            <form id="form_recruit"method="post"action="{% url 'interest' Contents_cat %}">
+                              {% csrf_token %}
+                            <button type="button"id="recruit_button"data-bs-toggle="modal" data-bs-target="#exampleModal">Recruit</button>
+                                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Recruit Content Creator</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        Are you sure to recruit "{{content.interest_file.creator}}<input type="hidden" name="the_creator" value="{{content.interest_file.creator}}"></input>" from the content "{{content.interest_file.title}}<input type="hidden" name="the_content"value="{{content.interest_file.title}}"></input><input type="hidden" name="the_category"value="{{content.interest_file.category}}"></input>"?
+                                        The system will send gmail and notification to the content creator if you sure to recruit.
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="submit" class="btn btn-primary"name="recruit_now"id="recruit_now_id">Recruit!</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </form>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                    {% elif Contents_cat == 'Dance' or Contents_cat == 'Programming' %}
+                      {% for content in Contents %}
+                          <div class="col">
+                            <a href="{% url 'viewcontent' category=Contents_cat id=content.interest_vid.id %}"  id="title_redirect">
+                            <div class="card" style="width: 18rem;">
+                              <img src="/media/{{content.interest_vid.thumbnail}}" class="card-img-top" alt="Thumbnail Image">
+                              <div class="card-body">
+                                <h5 class="card-title">{{content.interest_vid.title}}</h5>
+                                <h6>Creator: {{content.interest_vid.creator}}</h6>
+                                <p class="card-text text-truncate">{{content.interest_vid.description}}</p>
+                              </div>
+                            </div>
+                          </a>
+                          </div>
+                      {% endfor %}
+                  {% endif %}
+              </div>
+        </div>
+        {% endif %}
+        {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,85 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>YourTalent</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    <link href="{% static 'YourTalent/styles.css' %}" rel="stylesheet">
+    {% block javascript %}
+    {% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-white border-bottom">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'index' %}"><span style="color:#E73B93;font-family: Lucida Handwriting;">Y</span><span style="color:#D4549E;font-family: Lucida Handwriting;">o</span><span style="color:#C364A6;font-family: Lucida Handwriting;">u</span><span style="color:#BC69A9;font-family: Lucida Handwriting;">r</span><span style="color:#A876B0;font-family: Lucida Handwriting;">T</span><span style="color:#987DB7;font-family: Lucida Handwriting;">a</span><span style="color:#8983BC;font-family: Lucida Handwriting;">l</span><span style="color:#7A88C1;font-family: Lucida Handwriting;">e</span><span style="color:#678CC6;font-family: Lucida Handwriting;">n</span><span style="color:#4E92CB;font-family: Lucida Handwriting;">t</span></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          {% if user.is_authenticated %}
+          {% if role %}
+          {% if role == "recruiter" %}
+          <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'home' request.user.username %}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'interest' request.user.username %}">Interest</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+              </li>
+            </ul>
+          </div>
+          {% else %}
+          <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'home' request.user.username %}">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'mycontents' request.user %}">My Contents</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+              <li class="nav-item dropdown">
+              <a class="nav-link" href="#" role="button" id="temp_notif" data-bs-toggle="dropdown" aria-expanded="false">
+                  <svg width="24" height="24" stroke-width="1.5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18.1336 11C18.7155 16.3755 21 18 21 18H3C3 18 6 15.8667 6 8.4C6 6.70261 6.63214 5.07475 7.75736 3.87452C8.88258 2.67428 10.4087 2 12 2C12.3373 2 12.6717 2.0303 13 2.08949" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M19 8C20.6569 8 22 6.65685 22 5C22 3.34315 20.6569 2 19 2C17.3431 2 16 3.34315 16 5C16 6.65685 17.3431 8 19 8Z" stroke="currentColor"  stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" style="overflow-y: scroll";>
+                {% if notifications %}
+                {% for notif in notifications %}
+                {% if notif.category == 'Music' %}
+                <li style="border-style: outset;"class="notif_class"id="{{notif.id}}"><a class="dropdown-item" href="/mycontents/acerola?category=Music">{{notif.notif_recruiter.username}} has recruited you by the content<br>"{{notif.notif_thecontent_title}}".<br>You can check and discuss with the recruiter gmail<br>that has been sent by YourTalent. More further information is in your gmail.</a></li>
+                {% else %}
+                <li style="border-style: outset;"class="notif_class"id="{{notif.id}}"><a class="dropdown-item" href="{% url 'viewcontent' category=notif.category id=notif.content_id %}">{{notif.notif_recruiter.username}} has recruited you by the content<br>"{{notif.notif_thecontent_title}}".<br>You can check and discuss with the recruiter gmail<br>that has been sent by YourTalent. More further information is in your gmail.</a></li>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+              </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+              </li>
+            </ul>
+          </div>
+          {% endif %}
+          {% endif %}
+          {% endif %}
+        </div>
+      </nav>
+    <div class="body">
+        {% block body %}
+        {% endblock %}
+    </div>
+  </body>
+</html>

@@ -1,0 +1,99 @@
+{% extends "YourTalent/layout.html" %}
+{% load static %}
+{% block javascript %}
+<script src="{% static 'YourTalent/mycontents.js' %}"></script>
+{% endblock %}
+{% block body %}
+{% if user.is_authenticated %}
+    {% if role == "contentcreator" %}
+    {% if Contents_cat %}
+    <h2 class="mid_text"id="choose_category_header">{{Contents_cat}}</h2>
+    {% else %}
+    <h2 class="mid_text"id="choose_category_header">Choose category of <span id="cur_user">{{username}}</span> content</h2>
+    {% endif %}
+    <br>
+    <div class="mid_text"id="category_genre">
+        <select name="optionsee" id="option">
+            <option value="tosee" selected>Select category to see your contents.</option>
+            {% for genre in genres%}
+            <option value="/{{username}}?category={{genre}}" class="dropdown-item">{{genre}}</option>
+            {% endfor %}
+        </select>
+    </div><br>
+    {% if no_content %}
+    <br>
+    <h2>{{no_content}}</h2>
+    {% endif %}
+        {% if Contents %}
+        <div class="container">
+          <div class="row">
+            {% if Contents_cat == 'Illustration' %}
+                {% for content in Contents %}
+                <div class="col">
+                  <a href="{% url 'viewcontent' category=Contents_cat id=content.id %}"  id="title_redirect">
+                  <div class="card" style="width: 18rem;">
+                    <img src="/media/{{content.file}}" class="card-img-top" alt="Content Image">
+                    <div class="card-body">
+                      <h5 class="card-title">{{content.title}}</h5>
+                      <h6>Creator: {{content.creator}}</h6>
+                      <p class="card-text text-truncate">{{content.description}}</p>
+                    </div>
+                  </div>
+                  </a>
+                </div>
+                {% endfor %}
+                  {% elif Contents_cat == 'Music' %}
+                    {% for content in Contents %}
+                      <div class="col">
+                        <div class="card" style="width: 18rem;">
+                          <audio controls id="audio_play">
+                            <source src="/media/{{content.file}}" type="audio/mpeg">
+                            Your browser does not support the audio tag.
+                          </audio>
+                          <div class="card-body">
+                            <h5 class="card-title">{{content.title}}</h5>
+                            <h6>Creator: {{content.creator}}</h6>
+                            <p class="card-text">{{content.description}}</p>
+                            <button type="button" class="btn btn-outline-secondary"data-bs-toggle="modal" data-bs-target="#exampleModal">Delete</button>
+                                  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+                                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                          <p>You sure you want to delete yourtalent? Because once you delete yourtalent you will lose the content of it and have to reupload it again.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-outline-danger delete_contentcreator_content"id="{{content.id}}"value="{{Contents_cat}}">Sure</button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                    {% elif Contents_cat == 'Dance' or Contents_cat == 'Programming'%}
+                      {% for content in Contents %}
+                          <div class="col">
+                            <a href="{% url 'viewcontent' category=Contents_cat id=content.id %}"  id="title_redirect">
+                            <div class="card" style="width: 18rem;">
+                              <img src="/media/{{content.thumbnail}}" class="card-img-top" alt="Thumbnail Image">
+                              <div class="card-body">
+                                <h5 class="card-title">{{content.title}}</h5>
+                                <h6>Creator: {{content.creator}}</h6>
+                                <p class="card-text text-truncate">{{content.description}}</p>
+                              </div>
+                            </div>
+                          </a>
+                          </div>
+                      {% endfor %}
+                  {% endif %}
+              </div>
+        </div>
+        {% endif %}
+        {% endif %}
+{% endif %}
+{% endblock %}
